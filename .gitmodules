@@ -4,3 +4,6 @@
 [submodule "src/MassTransit.TransportSpecs/Modules/MassTransit-Stomp"]
 	path = src/MassTransit.TransportSpecs/Modules/MassTransit-Stomp
 	url = https://github.com/enix/MassTransit-Stomp.git
+[submodule "src/MassTransit.TransportSpecs/Modules/MassTransit-AzureServiceBus"]
+	path = src/MassTransit.TransportSpecs/Modules/MassTransit-AzureServiceBus
+	url = https://github.com/MassTransit/MassTransit-AzureServiceBus.git
