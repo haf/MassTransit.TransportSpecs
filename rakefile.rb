@@ -40,18 +40,20 @@ desc "reset all submodules' state to HEAD"
 task :reset_all do
   with_submodules do |_|
     sh 'git reset --hard HEAD'
+    sh 'git clean -fxd'
   end
+  sh 'git clean -fxd'
 end
 
 task :test do
   puts "TODO! Run tests here."
 end
 
-def create_proj_struct path
+def create_proj_struct path, path_override = nil
   puts "creating proj struct for '#{path}'"
   OpenStruct.new({
     :name => File.basename(path).gsub(/\.(cs|fs)proj/, ''),
-    :projfile => path,
+    :projfile => path_override || path,
     :xml => (open(path) { |f| Hpricot::XML(f) })
   })
 end
@@ -70,9 +72,9 @@ task :rewrite_refs do
         h.projs.each { |p|
           puts "## working in project #{p.name}".colorize( :red )
           refs = []
-          [['MassTransit.Log4NetIntegration', 'Loggers/'],
+          [['MassTransit.Log4NetIntegration', 'Loggers'],
            ['MassTransit.TestFramework', ''],
-           ['MassTransit.NLogIntegration', 'Loggers/'],
+           ['MassTransit.NLogIntegration', 'Loggers'],
            ['MassTransit', '']].
             each{|repl|
               puts "### finding ref to #{repl[0]}"
@@ -82,11 +84,14 @@ task :rewrite_refs do
                 remove.
                 map{|ref|
                   puts "found ref to #{ref} in #{p.name}"
-                  tpath =  "../MassTransit/src/#{File.join(repl[1], repl[0])}/#{repl[0]}.csproj"
+                  split = p.projfile.split("/")
+                  puts split.inspect
+                  prefix = "../" * (split.length - 2)
+                  tpath = "../MassTransit/#{File.join('src', repl[1], repl[0])}/#{repl[0]}.csproj"
                   puts "tpath: #{tpath}"
                   ref_proj = OpenStruct.new({ 
                     :ref_el => ref, # referencing element
-                    :target_proj => (create_proj_struct tpath)
+                    :target_proj => (create_proj_struct tpath, (File.join(prefix, tpath)))
                   })
                   refs << ref_proj
                   ref_proj
@@ -126,4 +131,4 @@ task :rewrite_refs do
   end
 end
 
-task :default => [:init, :test]
+task :default => [:reset_all, :merge_all, :rewrite_refs, :init, :test]
