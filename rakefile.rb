@@ -22,7 +22,7 @@ task :init do
   end
 end
 
-desc "update all submodules to the latest remote-tracking HEAD"
+desc "submodules.each do ; g pull --ff-only ; end"
 task :merge_all do
   with_submodules do |dir, rf|
     sh 'git pull --ff-only'
