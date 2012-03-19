@@ -1,0 +1,3 @@
+[submodule "src/MassTransit.TransportSpecs/Modules/MassTransit"]
+	path = src/MassTransit.TransportSpecs/Modules/MassTransit
+	url = https://github.com/MassTransit/MassTransit.git

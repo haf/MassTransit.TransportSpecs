@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.TransportSpecs", "MassTransit.TransportSpecs.csproj", "{33A30332-A315-4FF0-AF61-CB0AB4CC9954}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33A30332-A315-4FF0-AF61-CB0AB4CC9954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33A30332-A315-4FF0-AF61-CB0AB4CC9954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33A30332-A315-4FF0-AF61-CB0AB4CC9954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33A30332-A315-4FF0-AF61-CB0AB4CC9954}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
