@@ -1,3 +1,5 @@
+# Copyright Henrik Feldt 2012
+
 require 'albacore'
 require 'fileutils'
 
@@ -14,4 +16,8 @@ task :init do
   end
 end
 
-task :default => :init
+task :test do
+  puts "TODO! Run tests here."
+end
+
+task :default => [:init, :test]
