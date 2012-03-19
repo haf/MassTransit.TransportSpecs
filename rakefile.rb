@@ -97,6 +97,10 @@ task :rewrite_refs do
               }
             puts ""
             #puts "Truncating #{p.projfile}, writing:\n #{p.xml}"
+            
+            File.open(p.projfile, 'w+') { |f|
+              f.puts (p.xml)
+            }
           }
       end
     }
