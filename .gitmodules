@@ -1,9 +1,12 @@
 [submodule "src/MassTransit.TransportSpecs/Modules/MassTransit"]
 	path = src/MassTransit.TransportSpecs/Modules/MassTransit
 	url = https://github.com/haf/MassTransit.git
+	update = "rebase"
 [submodule "src/MassTransit.TransportSpecs/Modules/MassTransit-Stomp"]
 	path = src/MassTransit.TransportSpecs/Modules/MassTransit-Stomp
 	url = https://github.com/enix/MassTransit-Stomp.git
+	update = "rebase"
 [submodule "src/MassTransit.TransportSpecs/Modules/MassTransit-AzureServiceBus"]
 	path = src/MassTransit.TransportSpecs/Modules/MassTransit-AzureServiceBus
 	url = https://github.com/MassTransit/MassTransit-AzureServiceBus.git
+	update = "rebase"

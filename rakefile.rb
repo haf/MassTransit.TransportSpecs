@@ -3,16 +3,29 @@
 require 'albacore'
 require 'fileutils'
 
-desc "initialize submodules and build all projects"
-task :init do
-  sh 'git submodule init'
+def with_submodules &blk
   Dir.glob("./**/Modules/*/rakefile.rb").each do |r|
     d = File.dirname r
     Dir.chdir d do
-      sh 'rake' do |ok, res|
-        puts "failed with #{res.message}" unless ok
-      end
+      blk.call d, r
     end
+  end
+end
+
+desc "initialize submodules and build all projects"
+task :init do
+  sh 'git submodule init'
+  with_submodules do |dir, rf|
+    sh 'rake' do |ok, res|
+      puts "failed with #{res.message}" unless ok
+    end
+  end
+end
+
+desc "update all submodules to the latest remote-tracking HEAD"
+task :merge_all do
+  with_submodules do |dir, rf|
+    sh 'git pull --ff-only'
   end
 end
 
