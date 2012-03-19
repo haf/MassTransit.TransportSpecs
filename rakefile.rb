@@ -36,16 +36,23 @@ task :merge_all do
   end
 end
 
+desc "reset all submodules' state to HEAD"
+task :reset_all do
+  with_submodules do |_|
+    sh 'git reset --hard HEAD'
+  end
+end
+
 task :test do
   puts "TODO! Run tests here."
 end
 
 def create_proj_struct path
-  #puts "creating proj struct for '#{path}'"
+  puts "creating proj struct for '#{path}'"
   OpenStruct.new({
     :name => File.basename(path).gsub(/\.(cs|fs)proj/, ''),
     :projfile => path,
-    :xml => (open(path) { |f| Hpricot(f) })
+    :xml => (open(path) { |f| Hpricot::XML(f) })
   })
 end
 
@@ -63,16 +70,20 @@ task :rewrite_refs do
         h.projs.each { |p|
           puts "## working in project #{p.name}".colorize( :red )
           refs = []
-          %w[MassTransit MassTransit.Log4NetIntegration MassTransit.TestFramework MassTransit.NLogIntegration].
+          [['MassTransit.Log4NetIntegration', 'Loggers/'],
+           ['MassTransit.TestFramework', ''],
+           ['MassTransit.NLogIntegration', 'Loggers/'],
+           ['MassTransit', '']].
             each{|repl|
-              puts "### finding ref to #{repl}"
+              puts "### finding ref to #{repl[0]}"
               p.xml.
                 search("/Project/ItemGroup/Reference").
-                keep_if{|el| el[:include].include? repl}.
+                keep_if{|el| el[:Include].include? repl[0]}.
                 remove.
                 map{|ref|
                   puts "found ref to #{ref} in #{p.name}"
-                  tpath =  "../MassTransit/src/#{repl}/#{repl}.csproj"
+                  tpath =  "../MassTransit/src/#{File.join(repl[1], repl[0])}/#{repl[0]}.csproj"
+                  puts "tpath: #{tpath}"
                   ref_proj = OpenStruct.new({ 
                     :ref_el => ref, # referencing element
                     :target_proj => (create_proj_struct tpath)
@@ -83,23 +94,23 @@ task :rewrite_refs do
                 each{|ref_proj|
                   new_ref = %Q[
   <ProjectReference Include="#{ref_proj.target_proj.projfile}">
-    <Project>#{(ref_proj.target_proj.xml/"Project/PropertyGroup/ProjectGuid").innerHTML}</Project>
+    <Project>#{(ref_proj.target_proj.xml/"/Project/PropertyGroup/ProjectGuid").innerHTML}</Project>
     <Name>#{ref_proj.target_proj.name}</Name>
   </ProjectReference>]
-                  first_ref = (p.xml/"Project/ItemGroup/ProjectReference")
+                  first_ref = (p.xml/"/Project/ItemGroup/ProjectReference")
                   if first_ref.length != 0 then 
-                    first_ref.first.before new_ref
-                  else 
-                    (p.xml/"/Project/Import").first.before new_ref
+                    first_ref.first.before(new_ref)
+                  else
+                    (p.xml/"/Project/Import").first.before("<ItemGroup>" + new_ref + "</ItemGroup>")
                   end
-                  puts "#{ref_proj.ref_el[:include]} => #{ref_proj.target_proj.projfile}".colorize( :green )
+                  puts "#{ref_proj.ref_el[:Include]} => #{ref_proj.target_proj.projfile}".colorize( :green )
                 }
               }
             puts ""
             #puts "Truncating #{p.projfile}, writing:\n #{p.xml}"
             
             File.open(p.projfile, 'w+') { |f|
-              f.puts (p.xml)
+              f.write (p.xml.to_s)
             }
           }
       end
