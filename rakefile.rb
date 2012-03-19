@@ -58,6 +58,12 @@ def create_proj_struct path, path_override = nil
   })
 end
 
+def calculate_path proj_path, dep_name, subfolder
+  split = proj_path.split("/")
+  prefix = "../" * (split.length - 2)
+  return prefix, "../MassTransit/#{File.join('src', subfolder, dep_name)}/#{dep_name}.csproj"
+end
+
 task :rewrite_refs do
   replace = 
   begin
@@ -84,10 +90,7 @@ task :rewrite_refs do
                 remove.
                 map{|ref|
                   puts "found ref to #{ref} in #{p.name}"
-                  split = p.projfile.split("/")
-                  puts split.inspect
-                  prefix = "../" * (split.length - 2)
-                  tpath = "../MassTransit/#{File.join('src', repl[1], repl[0])}/#{repl[0]}.csproj"
+                  prefix, tpath = calculate_path p.projfile, repl[0], repl[1]
                   puts "tpath: #{tpath}"
                   ref_proj = OpenStruct.new({ 
                     :ref_el => ref, # referencing element
