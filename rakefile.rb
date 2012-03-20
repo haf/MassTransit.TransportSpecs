@@ -135,7 +135,7 @@ task :rewrite_refs do
   rescue Exception => e
     puts "COULD NOT REWRITE REFS!".colorize( :red )
     puts e.to_s
-    # clean up changed csproj files
+    # clean up changed XXproj files
     with_submodules { |d, rf|
       sh 'git reset --hard HEAD'
     }

@@ -2,5 +2,5 @@
 *.user
 obj/
 bin/
-packges/
+packages/
 *resharper*
