@@ -31,9 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Magnum, Version=2.0.0.4, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpTestsEx">
+      <HintPath>packages\SharpTestsEx.1.1.1\lib\SharpTestsEx.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpTestsEx.Mvc">
+      <HintPath>packages\SharpTestsEx.1.1.1\lib\SharpTestsEx.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,7 +54,11 @@
     <Compile Include="ForAll_context.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RetrySemantics_spec.cs" />
+    <Compile Include="SingleServiceBus.cs" />
     <Compile Include="Smoke.cs" />
+    <Compile Include="SubscriptionMsgs\EmptyInterface.cs" />
+    <Compile Include="SubscriptionSemantics_spec.cs" />
+    <Compile Include="TestUriFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Modules\AzureServiceBus\src\MassTransit.Async\MassTransit.Async.fsproj">
@@ -58,6 +69,10 @@
       <Project>{CCD26EDA-5048-4752-863D-4301173DCC93}</Project>
       <Name>MassTransit.AzureServiceBus</Name>
     </ProjectReference>
+    <ProjectReference Include="Modules\AzureServiceBus\src\MassTransit.Transports.AzureServiceBus.Tests\MassTransit.Transports.AzureServiceBus.Tests.csproj">
+      <Project>{BF352953-D63A-41A1-B3CF-65BE5624DA80}</Project>
+      <Name>MassTransit.Transports.AzureServiceBus.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="Modules\AzureServiceBus\src\MassTransit.Transports.AzureServiceBus\MassTransit.Transports.AzureServiceBus.csproj">
       <Project>{0E9F5DB7-3FA0-444F-BF82-74947525AE62}</Project>
       <Name>MassTransit.Transports.AzureServiceBus</Name>
@@ -65,6 +80,10 @@
     <ProjectReference Include="Modules\MassTransit\src\Loggers\MassTransit.NLogIntegration\MassTransit.NLogIntegration.csproj">
       <Project>{F802655A-D5EC-4031-B21F-A3EECCBE02A5}</Project>
       <Name>MassTransit.NLogIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="Modules\MassTransit\src\MassTransit.TestFramework\MassTransit.TestFramework.csproj">
+      <Project>{3C4B5F1A-69AD-415E-9F40-A7FDBD7A3012}</Project>
+      <Name>MassTransit.TestFramework</Name>
     </ProjectReference>
     <ProjectReference Include="Modules\MassTransit\src\MassTransit\MassTransit.csproj">
       <Project>{6EFD69FC-CBCC-4F85-AEE0-EFBA73F4D273}</Project>
@@ -86,6 +105,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

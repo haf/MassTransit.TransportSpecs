@@ -15,82 +15,27 @@ using System;
 using MassTransit.BusConfigurators;
 using MassTransit.Serialization;
 using MassTransit.Transports;
-using NUnit.Framework;
 
 namespace MassTransit.TransportSpecs
 {
-	/// <summary>
-	/// This test fixture has a single service bus that it performs tests on.
-	/// </summary>
-	interface SingleServiceBusFixture
-	{
-		/// <summary>
-		/// This property is set by <see cref="SingleServiceBusAttribute"/>,
-		/// or else fixture fails before running tests.
-		/// </summary>
-		IServiceBus ServiceBus { get; set; }
-
-		/// <summary>
-		/// Custom configuration for test fixture implementations. May be null.
-		/// </summary>
-		Action<ServiceBusConfigurator> CustomConfiguration { get; }
-	}
-
-	[AttributeUsage(AttributeTargets.Class)]
-	public class SingleServiceBusAttribute : Attribute, ITestAction
-	{
-		private IServiceBus bus;
-
-		public void BeforeTest(TestDetails testDetails)
-		{
-			var fixture = testDetails.Fixture as SingleServiceBusFixture;
-
-			if (fixture == null)
-				Assert.Fail(string.Format("Test Fixture '{0}' must implement SingleServiceBusFixture", 
-					testDetails.FullName));
-
-			var fixtureType = testDetails.Fixture.GetType();
-			var fixtureGenericTypes = fixtureType.GetGenericParameterConstraints();
-
-			var serviceBus = CreateServiceBus(fixture, fixtureGenericTypes);
-
-			fixture.ServiceBus = serviceBus;
-		}
-
-		private static IServiceBus CreateServiceBus(SingleServiceBusFixture fixture, Type[] fixtureGenericTypes)
-		{
-			var serializer = Activator.CreateInstance(fixtureGenericTypes[0]) as IMessageSerializer;
-			var transportFactory = Activator.CreateInstance(fixtureGenericTypes[1]) as ITransportFactory;
-			return ServiceBusFactory.New(sbc =>
-				{
-					sbc.SetDefaultSerializer(serializer);
-					sbc.AddTransportFactory(transportFactory);
-
-					if (fixture.CustomConfiguration != null)
-						fixture.CustomConfiguration(sbc);
-				});
-		}
-
-		public void AfterTest(TestDetails testDetails)
-		{
-			if (bus != null)
-				bus.Dispose();
-		}
-
-		public ActionTargets Targets
-		{
-			get { return ActionTargets.Default; }
-		}
-	}
-
 	[SingleServiceBus]
 	public class when_five_retries_fail_spec<TSerializer, TTransportFac>
 		: ForAll_context<TSerializer, TTransportFac>,
 		SingleServiceBusFixture
-		where TTransportFac : ITransportFactory, new()
-		where TSerializer : IMessageSerializer, new()
+		where TTransportFac : class, ITransportFactory, new()
+		where TSerializer : class, IMessageSerializer, new()
 	{
 		public IServiceBus ServiceBus { get; set; }
-		public Action<ServiceBusConfigurator> CustomConfiguration { get { return null; } }
+		public Action<ServiceBusConfigurator> ConfigureServiceBus { get { return null; } }
+		
+		public void Given()
+		{
+		}
+
+		/*
+		 * TODO: Implement spec from https://github.com/MassTransit/MassTransit/issues/75
+		 */
 	}
+
+
 }

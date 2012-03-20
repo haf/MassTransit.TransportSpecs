@@ -11,6 +11,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using MassTransit.Serialization;
 using MassTransit.Transports;
@@ -51,15 +52,22 @@ namespace MassTransit.TransportSpecs
 	[Timeout(20000)]
 	public abstract class ForAll_context<TSerializer, TTransportFac>
 		: ForAllContext
-		where TTransportFac : ITransportFactory, new()
-		where TSerializer : IMessageSerializer, new()
+		where TTransportFac : class, ITransportFactory, new()
+		where TSerializer : class, IMessageSerializer, new()
 	{
+		private TTransportFac _transportFactory;
+
 		// parameters: http://nunit.org/index.php?p=testFixture&r=2.5
 
 		/// <summary>Gets all supported message sizes in bytes</summary>
 		protected virtual IEnumerable<int> MessageSizes
 		{
 			get { return new[]{ 2 * 1024, 20 * 1024, 200000 * 1024, 256 * 1024, 1024 * 1024 };}
+		}
+
+		protected virtual TTransportFac TransportFactory
+		{
+			get { return _transportFactory ?? (_transportFactory = Activator.CreateInstance<TTransportFac>()); }
 		}
 	}
 }

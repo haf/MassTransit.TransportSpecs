@@ -22,8 +22,8 @@ namespace MassTransit.TransportSpecs
 	[TestFixture]
 	public class SmokeTest<TSerializer, TTransportFac>
 		: ForAll_context<TSerializer, TTransportFac>
-		where TTransportFac : ITransportFactory, new()
-		where TSerializer : IMessageSerializer, new()
+		where TTransportFac : class, ITransportFactory, new()
+		where TSerializer : class, IMessageSerializer, new()
 	{
 		[Test]
 		public void Smoke()
