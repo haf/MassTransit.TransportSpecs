@@ -26,9 +26,14 @@ namespace MassTransit.TransportSpecs
 		where TSerializer : class, IMessageSerializer, new()
 	{
 		public IServiceBus ServiceBus { get; set; }
+
 		public Action<ServiceBusConfigurator> ConfigureServiceBus { get { return null; } }
 		
 		public void Given()
+		{
+		}
+
+		public void When()
 		{
 		}
 

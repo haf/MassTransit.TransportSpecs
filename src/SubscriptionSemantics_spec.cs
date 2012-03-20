@@ -32,7 +32,7 @@ namespace MassTransit.TransportSpecs
 	{
 		public IServiceBus ServiceBus { get; set; }
 
-		readonly Future<EmptyInterface> _gottenMessage = new Future<EmptyInterface>();
+		Future<EmptyInterface> _gottenMessage;
 
 		public Action<ServiceBusConfigurator> ConfigureServiceBus
 		{
@@ -44,7 +44,12 @@ namespace MassTransit.TransportSpecs
 
 		public void Given()
 		{
-			ServiceBus.Publish<EmptyInterface>(new{});
+			_gottenMessage = new Future<EmptyInterface>();
+		}
+
+		public void When()
+		{
+			ServiceBus.Publish<EmptyInterface>(new { });
 		}
 
 		[Test]
@@ -62,16 +67,64 @@ namespace MassTransit.TransportSpecs
 		}
 	}
 
-	public class all_schemes_are_without_slashes<TSerializer, TTransportFac>
-		: ForAll_context<TSerializer, TTransportFac>
+	[SingleServiceBus]
+	public class subscribe_interface_with_data_spec<TSerializer, TTransportFac>
+		: ForAll_context<TSerializer, TTransportFac>,
+		SingleServiceBusFixture
 		where TTransportFac : class, ITransportFactory, new()
 		where TSerializer : class, IMessageSerializer, new()
 	{
-		[Test]
-		public void then()
+		private const string DataContents = "a b c d å ä ö ü";
+
+		public void Given()
 		{
-			TransportFactory.Scheme
-				.Should().Not.Contain("://");
+			_gottenMessage = new Future<MessageWithData>();
+		}
+
+		public IServiceBus ServiceBus { get; set; }
+
+		public Action<ServiceBusConfigurator> ConfigureServiceBus
+		{
+			get
+			{
+				return sbc => sbc.Subscribe(s => 
+					s.Handler<MessageWithData>(_gottenMessage.Complete));
+			}
+		}
+
+		Future<MessageWithData> _gottenMessage;
+
+		public void When()
+		{
+			ServiceBus.Publish<MessageWithData>(new
+				{
+					StringMessage = DataContents
+				});
+		}
+
+		[Test]
+		public void should_have_received()
+		{
+			_gottenMessage
+				.WaitUntilCompleted(5.Seconds())
+				.Should("have received the message")
+				.Be.True();
+		}
+
+		[Test]
+		public void should_have_same_data()
+		{
+			_gottenMessage
+				.Value
+				.StringMessage
+				.Should("be the same as the sent data")
+				.Be.EqualTo(DataContents);
+		}
+
+		[Test]
+		public void should_have_subscription()
+		{
+			ServiceBus.ShouldHaveSubscriptionFor<MessageWithData>();
 		}
 	}
 }

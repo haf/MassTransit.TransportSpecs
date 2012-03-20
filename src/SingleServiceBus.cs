@@ -36,8 +36,15 @@ namespace MassTransit.TransportSpecs
 		/// </summary>
 		Action<ServiceBusConfigurator> ConfigureServiceBus { get; }
 
-		[TestFixtureSetUp]
+		/// <summary>
+		/// Called before When()
+		/// </summary>
 		void Given();
+
+		/// <summary>
+		/// Called after Given()
+		/// </summary>
+		void When();
 	}
 
 	[AttributeUsage(AttributeTargets.Class)]
@@ -52,7 +59,9 @@ namespace MassTransit.TransportSpecs
 			if (fixture == null)
 				Assert.Fail(string.Format("Test Fixture '{0}' must implement SingleServiceBusFixture",
 					testDetails.FullName));
-			
+
+			fixture.Given();
+
 			var fixtureType = testDetails.Fixture.GetType();
 			var fixtureGenericTypes = fixtureType.GetGenericArguments();
 
@@ -61,6 +70,8 @@ namespace MassTransit.TransportSpecs
 			WaitForEndpointInitialization(serviceBus);
 
 			fixture.ServiceBus = serviceBus;
+
+			fixture.When();
 		}
 
 		private void WaitForEndpointInitialization(IServiceBus serviceBus)
