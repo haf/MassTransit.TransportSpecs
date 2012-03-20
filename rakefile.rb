@@ -5,25 +5,32 @@ require 'fileutils'
 require 'hpricot'
 require 'colorize'
 
-def with_submodules &blk
-  Dir.glob("./**/Modules/*/rakefile.rb").each do |r|
+def get_submodules
+  modules = Dir.glob("./**/Modules/*/rakefile.rb").collect do |r|
     d = File.dirname r
-    return if d.nil?
-    Dir.chdir d do
-      blk.call(OpenStruct.new({ 
-        :name => (File.basename(d)),
-        :dir => d,
-        :rakefile => r
-      }))
+    return nil if d.nil?
+    OpenStruct.new({ 
+      :name => (File.basename(d)),
+      :dir => d,
+      :rakefile => r
+    })
+  end
+  modules.sort_by { |m| m.name == "MassTransit" ? "!MassTransit" : m.name }
+end
+
+def with_submodules &blk
+  get_submodules.each do |p|
+    Dir.chdir p.dir do
+      blk.call(p)
     end
   end
 end
 
 desc "initialize submodules and build all projects"
-task :init do
+task :build do
   sh 'git submodule init'
   with_submodules do |mod|
-    sh 'rake' do |ok, res|
+    sh 'rake --trace' do |ok, res|
       puts "failed with #{res.message}" unless ok
     end
   end
@@ -36,7 +43,7 @@ task :merge_all do
   end
 end
 
-desc "reset all submodules' state to HEAD"
+desc "submodules.each do ; g reset --hard HEAD ; end"
 task :reset_all do
   with_submodules do |_|
     sh 'git reset --hard HEAD'
@@ -45,6 +52,7 @@ task :reset_all do
   sh 'git clean -fxd'
 end
 
+desc "run all tests for this project"
 task :test do
   puts "TODO! Run tests here."
 end
@@ -64,6 +72,7 @@ def calculate_path proj_path, dep_name, subfolder
   return prefix, "../MassTransit/#{File.join('src', subfolder, dep_name)}/#{dep_name}.csproj"
 end
 
+desc "rewrite all project references"
 task :rewrite_refs do
   replace = 
   begin
@@ -134,4 +143,4 @@ task :rewrite_refs do
   end
 end
 
-task :default => [:reset_all, :merge_all, :rewrite_refs, :init, :test]
+task :default => [:reset_all, :merge_all, :rewrite_refs, :build, :test]
