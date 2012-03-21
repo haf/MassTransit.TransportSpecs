@@ -26,9 +26,13 @@ def with_submodules &blk
   end
 end
 
-desc "initialize submodules and build all projects"
-task :build do
+desc "initialize all submodules"
+task :init do
   sh 'git.exe submodule init'
+end
+
+desc "build all projects"
+task :build => :init do
   with_submodules do |mod|
     sh 'rake --trace' do |ok, res|
       puts "failed with #{res.message}" unless ok
@@ -143,4 +147,4 @@ task :rewrite_refs do
   end
 end
 
-task :default => [:reset_all, :merge_all, :rewrite_refs, :build, :test]
+task :default => [:init, :reset_all, :merge_all, :rewrite_refs, :build, :test]
