@@ -56,6 +56,7 @@ namespace MassTransit.TransportSpecs
 		where TSerializer : class, IMessageSerializer, new()
 	{
 		private TTransportFac _transportFactory;
+		private TSerializer _serializer;
 
 		// parameters: http://nunit.org/index.php?p=testFixture&r=2.5
 
@@ -65,9 +66,20 @@ namespace MassTransit.TransportSpecs
 			get { return new[]{ 2 * 1024, 20 * 1024, 200000 * 1024, 256 * 1024, 1024 * 1024 };}
 		}
 
+		/// <summary>
+		/// Gets the transport factory that is being tested.
+		/// </summary>
 		protected virtual TTransportFac TransportFactory
 		{
 			get { return _transportFactory ?? (_transportFactory = Activator.CreateInstance<TTransportFac>()); }
+		}
+
+		/// <summary>
+		/// Gets the serializer that is being tested.
+		/// </summary>
+		protected virtual TSerializer Serializer
+		{
+			get { return _serializer ?? (_serializer = Activator.CreateInstance<TSerializer>()); }
 		}
 	}
 }

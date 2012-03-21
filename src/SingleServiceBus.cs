@@ -107,7 +107,7 @@ namespace MassTransit.TransportSpecs
 
 		public ActionTargets Targets
 		{
-			get { return ActionTargets.Default; }
+			get { return ActionTargets.Suite; }
 		}
 	}
 }

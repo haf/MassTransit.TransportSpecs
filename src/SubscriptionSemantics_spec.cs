@@ -18,21 +18,20 @@ using MassTransit.Serialization;
 using MassTransit.TestFramework;
 using MassTransit.TransportSpecs.SubscriptionMsgs;
 using MassTransit.Transports;
+using MassTransit.Transports.Loopback;
 using NUnit.Framework;
 using SharpTestsEx;
 
 namespace MassTransit.TransportSpecs
 {
+	[TestFixture(typeof(JsonMessageSerializer), typeof(LoopbackTransportFactory))]
 	[SingleServiceBus]
 	public class subscribe_empty_interface_spec<TSerializer, TTransportFac>
-		: ForAll_context<TSerializer, TTransportFac>,
-		SingleServiceBusFixture
+		: SingleServiceBusFixture
 		where TTransportFac : class, ITransportFactory, new()
 		where TSerializer : class, IMessageSerializer, new()
 	{
 		public IServiceBus ServiceBus { get; set; }
-
-		Future<EmptyInterface> _gottenMessage;
 
 		public Action<ServiceBusConfigurator> ConfigureServiceBus
 		{
@@ -42,8 +41,11 @@ namespace MassTransit.TransportSpecs
 			}
 		}
 
+		Future<EmptyInterface> _gottenMessage;
+
 		public void Given()
 		{
+			Console.WriteLine("Given Called");
 			_gottenMessage = new Future<EmptyInterface>();
 		}
 
