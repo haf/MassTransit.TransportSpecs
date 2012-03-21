@@ -28,7 +28,9 @@ end
 
 desc "initialize all submodules"
 task :init do
-  sh 'git.exe submodule init'
+  sh 'git.exe submodule init', { :verbose => true } do |ok, res|
+    raise "Init failed with #{res.exitstatus}" unless ok
+  end
 end
 
 desc "build all projects"
