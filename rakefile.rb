@@ -28,7 +28,7 @@ end
 
 desc "initialize submodules and build all projects"
 task :build do
-  sh 'git submodule init'
+  sh 'git.exe submodule init'
   with_submodules do |mod|
     sh 'rake --trace' do |ok, res|
       puts "failed with #{res.message}" unless ok
@@ -39,17 +39,17 @@ end
 desc "submodules.each do ; g pull --ff-only ; end"
 task :merge_all do
   with_submodules do |mod|
-    sh 'git pull --ff-only'
+    sh 'git.exe pull --ff-only'
   end
 end
 
 desc "submodules.each do ; g reset --hard HEAD ; end"
 task :reset_all do
   with_submodules do |_|
-    sh 'git reset --hard HEAD'
-    sh 'git clean -fxd'
+    sh 'git.exe reset --hard HEAD'
+    sh 'git.exe clean -fxd'
   end
-  sh 'git clean -fxd'
+  sh 'git.exe clean -fxd'
 end
 
 desc "run all tests for this project"
@@ -137,7 +137,7 @@ task :rewrite_refs do
     puts e.to_s
     # clean up changed XXproj files
     with_submodules { |d, rf|
-      sh 'git reset --hard HEAD'
+      sh 'git.exe reset --hard HEAD'
     }
     raise e
   end
