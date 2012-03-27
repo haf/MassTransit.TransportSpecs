@@ -77,7 +77,7 @@ namespace MassTransit.TransportSpecs
 		private void WaitForEndpointInitialization(IServiceBus serviceBus)
 		{
 			serviceBus.Endpoint.InboundTransport.Receive(c1 => c2 => { },
-				TimeSpan.FromSeconds(5.0));
+				TimeSpan.MaxValue);
 		}
 
 		private static IServiceBus CreateServiceBus(SingleServiceBusFixture fixture, Type[] fixtureGenericTypes)
