@@ -28,6 +28,7 @@ end
 
 desc "initialize all submodules"
 task :init do
+  puts "Running git.exit submodule init"
   out = `git.exe submodule init`
   raise "Init failed with #{out}" unless $?.success?
 end
